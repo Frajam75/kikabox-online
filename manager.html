@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestione Moduli Kikabox</title>
+  <style>
+    body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; }
+    label { display: block; margin: 1rem 0; font-size: 1.2rem; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #f2069b; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🎛️ Pannello Manager - Moduli Visibili</h1>
+  <form id="moduliForm">
+    <label><input type="checkbox" id="modAscolto" checked> Mostra Richieste Ascolto</label>
+    <label><input type="checkbox" id="modKaraoke" checked> Mostra Richieste Karaoke</label>
+    <label><input type="checkbox" id="modVoti" checked> Mostra Voti Karaoke</label>
+    <label><input type="checkbox" id="modChat" checked> Mostra Chat</label>
+    <label><input type="checkbox" id="modSuggerimenti" checked> Mostra Suggerimenti</label>
+    <label><input type="checkbox" id="modAnnunci" checked> Mostra Annunci</label>
+    <button type="button" onclick="salvaPreferenze()">Salva Preferenze</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('moduliForm');
+    const chiavi = ['modAscolto','modKaraoke','modVoti','modChat','modSuggerimenti','modAnnunci'];
+
+    function salvaPreferenze() {
+      const prefs = {};
+      chiavi.forEach(id => {
+        prefs[id] = document.getElementById(id).checked;
+      });
+      localStorage.setItem('moduliKikabox', JSON.stringify(prefs));
+      alert("Preferenze salvate! Ricarica la pagina utente per applicarle.");
+    }
+
+    function caricaPreferenze() {
+      const salvate = JSON.parse(localStorage.getItem('moduliKikabox') || '{}');
+      chiavi.forEach(id => {
+        if (salvate.hasOwnProperty(id)) {
+          document.getElementById(id).checked = salvate[id];
+        }
+      });
+    }
+
+    caricaPreferenze();
+  </script>
+</body>
+</html>
