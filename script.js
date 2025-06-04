@@ -1,107 +1,55 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
-document.addEventListener("DOMContentLoaded", () => {
-  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7XBUd9XhYP--6iywxL9j6ikr_9uazrJm5NWuH2AkZTzoiNlUY-77ie5hI8vwnlkjZPKx8lQM7Nhkm/pub?output=csv";
-  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyT5LPQryhmB_ZknfXPM3NUxlm3yb9m1g08nNmDUGSGRzx-D17UEiWwYG-urPNgYfkqMg/exec";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSCcLo6udOD0fJCezTNk_VgiJ8aXTjTD50Lx81fZYtJHGUp22ulBkcbncfuwbPcBw/pub?output=csv";
 
-  let brani = [];
+let listaBrani = [];
 
+function caricaListaBrani() {
   fetch(CSV_URL)
-    .then(res => res.text())
-    .then(data => {
-      const rows = data.split("\n").slice(1).map(r => r.split(","));
-      brani = rows.filter(r => r.length >= 2);
-
-      const artistiSet = new Set();
-      const titoliSet = new Set();
-
-      const artistaInput = document.getElementById("artistaInput");
-      const titoloInput = document.getElementById("titoloInput");
-
-      const artistiDatalist = document.getElementById("artistiSuggeriti");
-      const titoliDatalist = document.getElementById("titoliSuggeriti");
-
-      brani.forEach(([artista, titolo]) => {
-        if (artista && titolo) {
-          artistiSet.add(artista.trim());
-          titoliSet.add(titolo.trim());
-        }
+    .then(response => response.text())
+    .then(csv => {
+      const righe = csv.trim().split('\n').slice(1);
+      listaBrani = righe.map(riga => {
+        const [titolo, artista] = riga.split(',');
+        return { titolo: titolo.trim(), artista: artista.trim() };
       });
 
-      artistiSet.forEach(artista => {
-        let opt = document.createElement("option");
-        opt.value = artista;
-        artistiDatalist.appendChild(opt);
-      });
-
-      titoliSet.forEach(titolo => {
-        let opt = document.createElement("option");
-        opt.value = titolo;
-        titoliDatalist.appendChild(opt);
-      });
-
-      artistaInput.addEventListener("input", () => {
-        const val = artistaInput.value.toLowerCase();
-        const corrispondenti = brani.filter(([artista]) => artista.toLowerCase().includes(val)).map(([_, titolo]) => titolo);
-        updateDatalist(titoliDatalist, [...new Set(corrispondenti)]);
-      });
-
-      titoloInput.addEventListener("input", () => {
-        const val = titoloInput.value.toLowerCase();
-        const corrispondenti = brani.filter(([_, titolo]) => titolo.toLowerCase().includes(val)).map(([artista]) => artista);
-        updateDatalist(artistiDatalist, [...new Set(corrispondenti)]);
-      });
+      aggiornaDatalist();
     });
+}
 
-  function updateDatalist(datalist, values) {
-    while (datalist.firstChild) datalist.removeChild(datalist.firstChild);
-    values.forEach(v => {
-      let opt = document.createElement("option");
-      opt.value = v;
-      datalist.appendChild(opt);
-    });
-  }
+function aggiornaDatalist() {
+  const datalistTitoli = document.getElementById("datalist-titoli");
+  const datalistArtisti = document.getElementById("datalist-artisti");
 
-  document.getElementById("inviaAscolto").addEventListener("click", () => {
-    const artista = document.getElementById("artistaInput").value;
-    const titolo = document.getElementById("titoloInput").value;
-    const dedica = document.getElementById("dedica").value;
-    const nome = document.getElementById("nomeRichiedenteAscolto").value;
-    fetch(WEBHOOK_URL, {
-      method: "POST",
-      body: new URLSearchParams({
-        tipo: "ascolto",
-        artista, titolo, dedica, nome,
-        data: new Date().toLocaleString()
-      })
-    }).then(() => alert("Richiesta inviata!"));
+  const titoliUnici = [...new Set(listaBrani.map(b => b.titolo))];
+  const artistiUnici = [...new Set(listaBrani.map(b => b.artista))];
+
+  datalistTitoli.innerHTML = titoliUnici.map(t => `<option value="${t}">`).join('');
+  datalistArtisti.innerHTML = artistiUnici.map(a => `<option value="${a}">`).join('');
+}
+
+function collegaCampiBidirezionali() {
+  const inputTitolo = document.getElementById("titolo-ascolto");
+  const inputArtista = document.getElementById("artista-ascolto");
+
+  inputTitolo.addEventListener("input", () => {
+    const trovato = listaBrani.find(b => b.titolo.toLowerCase() === inputTitolo.value.toLowerCase());
+    if (trovato) {
+      inputArtista.value = trovato.artista;
+    }
   });
-});
-<<<<<<< HEAD
-=======
 
-// --- Gestione visibilità sito ---
+  inputArtista.addEventListener("input", () => {
+    const titoli = listaBrani
+      .filter(b => b.artista.toLowerCase() === inputArtista.value.toLowerCase())
+      .map(b => b.titolo);
+
+    const datalistTitoli = document.getElementById("datalist-titoli");
+    datalistTitoli.innerHTML = titoli.map(t => `<option value="${t}">`).join('');
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const statoCheckbox = document.getElementById("toggle-visibility");
-  if (statoCheckbox) {
-    // Preleva stato dal foglio Google Sheet (impostazioni)
-    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vT7XBUd9XhYP--6iywxL9j6ikr_9uazrJm5NWuH2AkZTzoiNlUY-77ie5hI8vwnlkjZPKx8lQM7Nhkm/pub?gid=1906824384&single=true&output=csv")
-      .then(res => res.text())
-      .then(data => {
-        const stato = data.split("\n")[1]?.trim().toLowerCase();
-        statoCheckbox.checked = stato === "attivo";
-      });
-
-    // Gestione click checkbox
-    statoCheckbox.addEventListener("change", () => {
-      const stato = statoCheckbox.checked ? "attivo" : "chiuso";
-      fetch("https://script.google.com/macros/s/AKfycbyT5LPQryhmB_ZknfXPM3NUxlm3yb9m1g08nNmDUGSGRzx-D17UEiWwYG-urPNgYfkqMg/exec", {
-        method: "POST",
-        body: JSON.stringify({ tipo: "visibilita", stato })
-      });
-    });
-  }
+  caricaListaBrani();
+  collegaCampiBidirezionali();
 });
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
