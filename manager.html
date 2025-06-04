@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+<<<<<<< HEAD
   <title>Gestione Moduli Kikabox</title>
   <style>
     body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; }
@@ -48,3 +52,71 @@
   </script>
 </body>
 </html>
+=======
+  <title>Gestione Kikabox</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <style>
+    .manager-section {
+      padding: 1em;
+      background: #f5f5f5;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 2em auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1em;
+    }
+    .toggle-container label {
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="manager-section">
+    <h2>Gestione Moduli e Visibilità</h2>
+
+    <div class="toggle-container">
+      <label for="toggle-visibility">Sito attivo</label>
+      <input type="checkbox" id="toggle-visibility" />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-ascolto">Modulo Ascolto</label>
+      <input type="checkbox" id="modulo-ascolto" checked />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-karaoke">Modulo Karaoke</label>
+      <input type="checkbox" id="modulo-karaoke" checked />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-suggerimenti">Modulo Suggerimenti</label>
+      <input type="checkbox" id="modulo-suggerimenti" checked />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-voti">Modulo Voti</label>
+      <input type="checkbox" id="modulo-voti" checked />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-chat">Modulo Chat</label>
+      <input type="checkbox" id="modulo-chat" checked />
+    </div>
+
+    <div class="toggle-container">
+      <label for="modulo-annunci">Modulo Annunci</label>
+      <input type="checkbox" id="modulo-annunci" checked />
+    </div>
+
+    <button onclick="salvaModuliManager()">Salva Preferenze</button>
+  </div>
+</body>
+</html>
+>>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
