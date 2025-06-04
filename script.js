@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
 document.addEventListener("DOMContentLoaded", () => {
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7XBUd9XhYP--6iywxL9j6ikr_9uazrJm5NWuH2AkZTzoiNlUY-77ie5hI8vwnlkjZPKx8lQM7Nhkm/pub?output=csv";
   const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyT5LPQryhmB_ZknfXPM3NUxlm3yb9m1g08nNmDUGSGRzx-D17UEiWwYG-urPNgYfkqMg/exec";
@@ -76,3 +79,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }).then(() => alert("Richiesta inviata!"));
   });
 });
+<<<<<<< HEAD
+=======
+
+// --- Gestione visibilità sito ---
+document.addEventListener("DOMContentLoaded", () => {
+  const statoCheckbox = document.getElementById("toggle-visibility");
+  if (statoCheckbox) {
+    // Preleva stato dal foglio Google Sheet (impostazioni)
+    fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vT7XBUd9XhYP--6iywxL9j6ikr_9uazrJm5NWuH2AkZTzoiNlUY-77ie5hI8vwnlkjZPKx8lQM7Nhkm/pub?gid=1906824384&single=true&output=csv")
+      .then(res => res.text())
+      .then(data => {
+        const stato = data.split("\n")[1]?.trim().toLowerCase();
+        statoCheckbox.checked = stato === "attivo";
+      });
+
+    // Gestione click checkbox
+    statoCheckbox.addEventListener("change", () => {
+      const stato = statoCheckbox.checked ? "attivo" : "chiuso";
+      fetch("https://script.google.com/macros/s/AKfycbyT5LPQryhmB_ZknfXPM3NUxlm3yb9m1g08nNmDUGSGRzx-D17UEiWwYG-urPNgYfkqMg/exec", {
+        method: "POST",
+        body: JSON.stringify({ tipo: "visibilita", stato })
+      });
+    });
+  }
+});
+>>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
