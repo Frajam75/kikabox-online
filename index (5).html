@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kikabox Jukebox Virtuale</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <img src="Kikaboxlogo.svg" alt="Logo" class="logo">
+    <h1>Richieste di Ascolto</h1>
+  </header>
+
+  <main>
+    <section id="richieste-ascolto">
+      <h2>Invia la tua richiesta di ascolto</h2>
+      <form id="form-ascolto">
+        <input list="datalist-artisti" id="artista-ascolto" name="artista" placeholder="Artista" required>
+        <datalist id="datalist-artisti"></datalist>
+
+        <input list="datalist-titoli" id="titolo-ascolto" name="titolo" placeholder="Titolo del brano" required>
+        <datalist id="datalist-titoli"></datalist>
+
+        <input type="text" name="dedica" placeholder="Dedica (facoltativa)">
+        <button type="submit">Invia richiesta</button>
+      </form>
+      <div id="lista-richieste-ascolto"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
