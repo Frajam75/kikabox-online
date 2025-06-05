@@ -1,84 +1,58 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-<<<<<<< HEAD
-  <title>Gestione Moduli Kikabox</title>
-  <style>
-    body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; }
-    label { display: block; margin: 1rem 0; font-size: 1.2rem; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #f2069b; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-  </style>
-</head>
-<body>
-  <h1>🎛️ Pannello Manager - Moduli Visibili</h1>
-  <form id="moduliForm">
-    <label><input type="checkbox" id="modAscolto" checked> Mostra Richieste Ascolto</label>
-    <label><input type="checkbox" id="modKaraoke" checked> Mostra Richieste Karaoke</label>
-    <label><input type="checkbox" id="modVoti" checked> Mostra Voti Karaoke</label>
-    <label><input type="checkbox" id="modChat" checked> Mostra Chat</label>
-    <label><input type="checkbox" id="modSuggerimenti" checked> Mostra Suggerimenti</label>
-    <label><input type="checkbox" id="modAnnunci" checked> Mostra Annunci</label>
-    <button type="button" onclick="salvaPreferenze()">Salva Preferenze</button>
-  </form>
-
-  <script>
-    const form = document.getElementById('moduliForm');
-    const chiavi = ['modAscolto','modKaraoke','modVoti','modChat','modSuggerimenti','modAnnunci'];
-
-    function salvaPreferenze() {
-      const prefs = {};
-      chiavi.forEach(id => {
-        prefs[id] = document.getElementById(id).checked;
-      });
-      localStorage.setItem('moduliKikabox', JSON.stringify(prefs));
-      alert("Preferenze salvate! Ricarica la pagina utente per applicarle.");
-    }
-
-    function caricaPreferenze() {
-      const salvate = JSON.parse(localStorage.getItem('moduliKikabox') || '{}');
-      chiavi.forEach(id => {
-        if (salvate.hasOwnProperty(id)) {
-          document.getElementById(id).checked = salvate[id];
-        }
-      });
-    }
-
-    caricaPreferenze();
-  </script>
-</body>
-</html>
-=======
+  <meta charset="UTF-8" />
   <title>Gestione Kikabox</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
   <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 2rem;
+    }
+
     .manager-section {
-      padding: 1em;
-      background: #f5f5f5;
+      background: #2c2c2c;
+      padding: 2rem;
       border-radius: 12px;
       max-width: 600px;
-      margin: 2em auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
     }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
     .toggle-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1em;
+      margin-bottom: 1rem;
     }
+
     .toggle-container label {
-      font-size: 1.1em;
+      font-size: 1.1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background: #f2069b;
+      color: #fff;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1.5rem;
     }
   </style>
 </head>
 <body>
   <div class="manager-section">
-    <h2>Gestione Moduli e Visibilità</h2>
+    <h2>🎛️ Pannello Manager - Moduli e Visibilità</h2>
 
     <div class="toggle-container">
       <label for="toggle-visibility">Sito attivo</label>
@@ -96,12 +70,7 @@
     </div>
 
     <div class="toggle-container">
-      <label for="modulo-suggerimenti">Modulo Suggerimenti</label>
-      <input type="checkbox" id="modulo-suggerimenti" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-voti">Modulo Voti</label>
+      <label for="modulo-voti">Modulo Voti Karaoke</label>
       <input type="checkbox" id="modulo-voti" checked />
     </div>
 
@@ -111,12 +80,49 @@
     </div>
 
     <div class="toggle-container">
+      <label for="modulo-suggerimenti">Modulo Suggerimenti</label>
+      <input type="checkbox" id="modulo-suggerimenti" checked />
+    </div>
+
+    <div class="toggle-container">
       <label for="modulo-annunci">Modulo Annunci</label>
       <input type="checkbox" id="modulo-annunci" checked />
     </div>
 
     <button onclick="salvaModuliManager()">Salva Preferenze</button>
   </div>
+
+  <script>
+    const CHIAVI = [
+      'toggle-visibility',
+      'modulo-ascolto',
+      'modulo-karaoke',
+      'modulo-voti',
+      'modulo-chat',
+      'modulo-suggerimenti',
+      'modulo-annunci'
+    ];
+
+    function salvaModuliManager() {
+      const config = {};
+      CHIAVI.forEach(id => {
+        config[id] = document.getElementById(id).checked;
+      });
+      localStorage.setItem('moduliKikabox', JSON.stringify(config));
+      alert("Preferenze salvate! Ricarica la pagina principale per applicarle.");
+    }
+
+    function caricaModuliManager() {
+      const salvati = JSON.parse(localStorage.getItem('moduliKikabox') || '{}');
+      CHIAVI.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && salvati.hasOwnProperty(id)) {
+          el.checked = salvati[id];
+        }
+      });
+    }
+
+    caricaModuliManager();
+  </script>
 </body>
 </html>
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
