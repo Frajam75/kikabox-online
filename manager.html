@@ -1,122 +1,99 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-<<<<<<< HEAD
-  <title>Gestione Moduli Kikabox</title>
+  <meta charset="UTF-8" />
+  <title>Gestione Moduli</title>
   <style>
-    body { font-family: sans-serif; background: #121212; color: #fff; padding: 2rem; }
-    label { display: block; margin: 1rem 0; font-size: 1.2rem; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #f2069b; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+    }
+    .modulo {
+      margin: 1em 0;
+    }
+    .contenuto {
+      padding: 1em;
+      border: 1px solid #ccc;
+      margin-top: 0.5em;
+      display: none;
+    }
+    .visibile {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <h1>🎛️ Pannello Manager - Moduli Visibili</h1>
-  <form id="moduliForm">
-    <label><input type="checkbox" id="modAscolto" checked> Mostra Richieste Ascolto</label>
-    <label><input type="checkbox" id="modKaraoke" checked> Mostra Richieste Karaoke</label>
-    <label><input type="checkbox" id="modVoti" checked> Mostra Voti Karaoke</label>
-    <label><input type="checkbox" id="modChat" checked> Mostra Chat</label>
-    <label><input type="checkbox" id="modSuggerimenti" checked> Mostra Suggerimenti</label>
-    <label><input type="checkbox" id="modAnnunci" checked> Mostra Annunci</label>
-    <button type="button" onclick="salvaPreferenze()">Salva Preferenze</button>
-  </form>
+  <h1>Gestione Moduli</h1>
+
+  <label>
+    <input type="checkbox" id="paginaVisibile" checked />
+    Mostra pagina
+  </label>
+
+  <div id="contenutoPagina">
+    <div class="modulo">
+      <label>
+        <input type="checkbox" class="toggleModulo" data-target="moduloAscolto" checked />
+        Modulo Ascolto
+      </label>
+      <div id="moduloAscolto" class="contenuto visibile">
+        Contenuto del modulo Ascolto
+      </div>
+    </div>
+
+    <div class="modulo">
+      <label>
+        <input type="checkbox" class="toggleModulo" data-target="moduloKaraoke" checked />
+        Modulo Karaoke
+      </label>
+      <div id="moduloKaraoke" class="contenuto visibile">
+        Contenuto del modulo Karaoke
+      </div>
+    </div>
+
+    <div class="modulo">
+      <label>
+        <input type="checkbox" class="toggleModulo" data-target="moduloChat" checked />
+        Modulo Chat
+      </label>
+      <div id="moduloChat" class="contenuto visibile">
+        Contenuto del modulo Chat
+      </div>
+    </div>
+
+    <!-- Aggiungi altri moduli qui -->
+  </div>
 
   <script>
-    const form = document.getElementById('moduliForm');
-    const chiavi = ['modAscolto','modKaraoke','modVoti','modChat','modSuggerimenti','modAnnunci'];
-
-    function salvaPreferenze() {
-      const prefs = {};
-      chiavi.forEach(id => {
-        prefs[id] = document.getElementById(id).checked;
-      });
-      localStorage.setItem('moduliKikabox', JSON.stringify(prefs));
-      alert("Preferenze salvate! Ricarica la pagina utente per applicarle.");
-    }
-
-    function caricaPreferenze() {
-      const salvate = JSON.parse(localStorage.getItem('moduliKikabox') || '{}');
-      chiavi.forEach(id => {
-        if (salvate.hasOwnProperty(id)) {
-          document.getElementById(id).checked = salvate[id];
+    // Funzione per aggiornare la visibilità dei moduli
+    function aggiornaVisibilita() {
+      const checkboxes = document.querySelectorAll('.toggleModulo');
+      checkboxes.forEach(cb => {
+        const targetId = cb.dataset.target;
+        const targetDiv = document.getElementById(targetId);
+        if (cb.checked) {
+          targetDiv.classList.add('visibile');
+        } else {
+          targetDiv.classList.remove('visibile');
         }
       });
     }
 
-    caricaPreferenze();
+    // Gestione della visibilità dell'intera pagina
+    const paginaVisibileCheckbox = document.getElementById('paginaVisibile');
+    const contenutoPagina = document.getElementById('contenutoPagina');
+    paginaVisibileCheckbox.addEventListener('change', () => {
+      contenutoPagina.style.display = paginaVisibileCheckbox.checked ? 'block' : 'none';
+    });
+
+    // Event listener per le checkbox dei moduli
+    const checkboxes = document.querySelectorAll('.toggleModulo');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', aggiornaVisibilita);
+    });
+
+    // Inizializza la visibilità al caricamento della pagina
+    aggiornaVisibilita();
   </script>
 </body>
 </html>
-=======
-  <title>Gestione Kikabox</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
-  <style>
-    .manager-section {
-      padding: 1em;
-      background: #f5f5f5;
-      border-radius: 12px;
-      max-width: 600px;
-      margin: 2em auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1em;
-    }
-    .toggle-container label {
-      font-size: 1.1em;
-    }
-  </style>
-</head>
-<body>
-  <div class="manager-section">
-    <h2>Gestione Moduli e Visibilità</h2>
-
-    <div class="toggle-container">
-      <label for="toggle-visibility">Sito attivo</label>
-      <input type="checkbox" id="toggle-visibility" />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-ascolto">Modulo Ascolto</label>
-      <input type="checkbox" id="modulo-ascolto" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-karaoke">Modulo Karaoke</label>
-      <input type="checkbox" id="modulo-karaoke" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-suggerimenti">Modulo Suggerimenti</label>
-      <input type="checkbox" id="modulo-suggerimenti" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-voti">Modulo Voti</label>
-      <input type="checkbox" id="modulo-voti" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-chat">Modulo Chat</label>
-      <input type="checkbox" id="modulo-chat" checked />
-    </div>
-
-    <div class="toggle-container">
-      <label for="modulo-annunci">Modulo Annunci</label>
-      <input type="checkbox" id="modulo-annunci" checked />
-    </div>
-
-    <button onclick="salvaModuliManager()">Salva Preferenze</button>
-  </div>
-</body>
-</html>
->>>>>>> 8e29ae6 (Versione completa con manager e moduli dinamici)
