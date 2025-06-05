@@ -1,55 +1,89 @@
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSCcLo6udOD0fJCezTNk_VgiJ8aXTjTD50Lx81fZYtJHGUp22ulBkcbncfuwbPcBw/pub?output=csv";
 
-let listaBrani = [];
+let brani = [];
 
-function caricaListaBrani() {
-  fetch(CSV_URL)
-    .then(response => response.text())
-    .then(csv => {
-      const righe = csv.trim().split('\n').slice(1);
-      listaBrani = righe.map(riga => {
-        const [titolo, artista] = riga.split(',');
-        return { titolo: titolo.trim(), artista: artista.trim() };
-      });
+async function caricaBraniDaCSV() {
+  const response = await fetch(CSV_URL);
+  const text = await response.text();
+  const righe = text.split("\n").slice(1); // salta intestazione
 
-      aggiornaDatalist();
-    });
-}
-
-function aggiornaDatalist() {
-  const datalistTitoli = document.getElementById("datalist-titoli");
-  const datalistArtisti = document.getElementById("datalist-artisti");
-
-  const titoliUnici = [...new Set(listaBrani.map(b => b.titolo))];
-  const artistiUnici = [...new Set(listaBrani.map(b => b.artista))];
-
-  datalistTitoli.innerHTML = titoliUnici.map(t => `<option value="${t}">`).join('');
-  datalistArtisti.innerHTML = artistiUnici.map(a => `<option value="${a}">`).join('');
-}
-
-function collegaCampiBidirezionali() {
-  const inputTitolo = document.getElementById("titolo-ascolto");
-  const inputArtista = document.getElementById("artista-ascolto");
-
-  inputTitolo.addEventListener("input", () => {
-    const trovato = listaBrani.find(b => b.titolo.toLowerCase() === inputTitolo.value.toLowerCase());
-    if (trovato) {
-      inputArtista.value = trovato.artista;
-    }
+  brani = righe.map(riga => {
+    const colonne = riga.split(",");
+    return {
+      artista: colonne[0]?.trim().toLowerCase(),
+      titolo: colonne[1]?.trim().toLowerCase()
+    };
   });
 
-  inputArtista.addEventListener("input", () => {
-    const titoli = listaBrani
-      .filter(b => b.artista.toLowerCase() === inputArtista.value.toLowerCase())
-      .map(b => b.titolo);
+  popolaDatalist();
+}
 
-    const datalistTitoli = document.getElementById("datalist-titoli");
-    datalistTitoli.innerHTML = titoli.map(t => `<option value="${t}">`).join('');
+function popolaDatalist() {
+  const artistiSet = new Set();
+  const titoliSet = new Set();
+
+  brani.forEach(b => {
+    if (b.artista) artistiSet.add(capitalize(b.artista));
+    if (b.titolo) titoliSet.add(capitalize(b.titolo));
+  });
+
+  const artistiDatalist = document.getElementById("artisti-lista");
+  const titoliDatalist = document.getElementById("titoli-lista");
+
+  artistiDatalist.innerHTML = "";
+  titoliDatalist.innerHTML = "";
+
+  artistiSet.forEach(artista => {
+    const option = document.createElement("option");
+    option.value = artista;
+    artistiDatalist.appendChild(option);
+  });
+
+  titoliSet.forEach(titolo => {
+    const option = document.createElement("option");
+    option.value = titolo;
+    titoliDatalist.appendChild(option);
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  caricaListaBrani();
-  collegaCampiBidirezionali();
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ricerca inversa: se scrivi un artista, mostra solo i titoli relativi
+document.getElementById("artista-ascolto").addEventListener("input", function () {
+  const artistaInput = this.value.toLowerCase();
+  const titoliDatalist = document.getElementById("titoli-lista");
+  titoliDatalist.innerHTML = "";
+
+  const titoli = brani
+    .filter(b => b.artista.includes(artistaInput))
+    .map(b => capitalize(b.titolo));
+
+  [...new Set(titoli)].forEach(t => {
+    const option = document.createElement("option");
+    option.value = t;
+    titoliDatalist.appendChild(option);
+  });
 });
+
+// viceversa: se scrivi un titolo, mostra l'artista
+document.getElementById("titolo-ascolto").addEventListener("input", function () {
+  const titoloInput = this.value.toLowerCase();
+  const artistiDatalist = document.getElementById("artisti-lista");
+  artistiDatalist.innerHTML = "";
+
+  const artisti = brani
+    .filter(b => b.titolo.includes(titoloInput))
+    .map(b => capitalize(b.artista));
+
+  [...new Set(artisti)].forEach(a => {
+    const option = document.createElement("option");
+    option.value = a;
+    artistiDatalist.appendChild(option);
+  });
+});
+
+caricaBraniDaCSV();
+
