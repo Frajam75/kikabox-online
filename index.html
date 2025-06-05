@@ -20,15 +20,20 @@
   </section>
 
   <!-- Richiesta Ascolto -->
-  <section>
-    <h2><img src="headphones.svg" class="icon" /> Richiesta Ascolto</h2>
-    <label>Artista: <input type="text" id="filtroArtista" oninput="aggiornaBrani()" /></label>
-    <label>Titolo: <input type="text" id="filtroTitolo" oninput="aggiornaBrani()" /></label>
-    <select id="selectBrano" size="5"></select>
-    <input type="text" id="dedica" placeholder="Dedica (facoltativa)" />
-    <input type="text" id="nomeAscolto" placeholder="Il tuo nome" />
-    <button onclick="inviaRichiestaAscolto()">Invia Richiesta</button>
-  </section>
+  <section id="richieste-ascolto">
+      <h2>Invia la tua richiesta di ascolto</h2>
+      <form id="form-ascolto">
+        <input list="datalist-artisti" id="artista-ascolto" name="artista" placeholder="Artista" required>
+        <datalist id="datalist-artisti"></datalist>
+
+        <input list="datalist-titoli" id="titolo-ascolto" name="titolo" placeholder="Titolo del brano" required>
+        <datalist id="datalist-titoli"></datalist>
+
+        <input type="text" name="dedica" placeholder="Dedica (facoltativa)">
+        <button type="submit">Invia richiesta</button>
+      </form>
+      <div id="lista-richieste-ascolto"></div>
+    </section>
 
   <!-- Richiesta Karaoke -->
   <section>
