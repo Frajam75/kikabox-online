@@ -1,99 +1,26 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <title>Gestione Moduli</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2em;
-    }
-    .modulo {
-      margin: 1em 0;
-    }
-    .contenuto {
-      padding: 1em;
-      border: 1px solid #ccc;
-      margin-top: 0.5em;
-      display: none;
-    }
-    .visibile {
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Gestione Moduli - Kikabox</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="salva_visibilita.js" defer></script>
 </head>
 <body>
-  <h1>Gestione Moduli</h1>
-
-  <label>
-    <input type="checkbox" id="paginaVisibile" checked />
-    Mostra pagina
-  </label>
-
-  <div id="contenutoPagina">
-    <div class="modulo">
-      <label>
-        <input type="checkbox" class="toggleModulo" data-target="moduloAscolto" checked />
-        Modulo Ascolto
-      </label>
-      <div id="moduloAscolto" class="contenuto visibile">
-        Contenuto del modulo Ascolto
-      </div>
+    <div class="container">
+        <h1>Gestione Visibilità Moduli</h1>
+        <form id="visibilityForm">
+            <label><input type="checkbox" name="ascolto" checked> Modulo Ascolto</label><br>
+            <label><input type="checkbox" name="karaoke" checked> Modulo Karaoke</label><br>
+            <label><input type="checkbox" name="chat" checked> Modulo Chat</label><br>
+            <label><input type="checkbox" name="voti" checked> Modulo Voti</label><br>
+            <label><input type="checkbox" name="suggerimenti" checked> Modulo Suggerimenti</label><br>
+            <label><input type="checkbox" name="annunci" checked> Modulo Annunci</label><br>
+            <label><input type="checkbox" name="pagina_visibile" checked> Pagina Visibile</label><br><br>
+            <button type="submit">Salva modifiche</button>
+        </form>
+        <p id="salvataggioStatus"></p>
     </div>
-
-    <div class="modulo">
-      <label>
-        <input type="checkbox" class="toggleModulo" data-target="moduloKaraoke" checked />
-        Modulo Karaoke
-      </label>
-      <div id="moduloKaraoke" class="contenuto visibile">
-        Contenuto del modulo Karaoke
-      </div>
-    </div>
-
-    <div class="modulo">
-      <label>
-        <input type="checkbox" class="toggleModulo" data-target="moduloChat" checked />
-        Modulo Chat
-      </label>
-      <div id="moduloChat" class="contenuto visibile">
-        Contenuto del modulo Chat
-      </div>
-    </div>
-
-    <!-- Aggiungi altri moduli qui -->
-  </div>
-
-  <script>
-    // Funzione per aggiornare la visibilità dei moduli
-    function aggiornaVisibilita() {
-      const checkboxes = document.querySelectorAll('.toggleModulo');
-      checkboxes.forEach(cb => {
-        const targetId = cb.dataset.target;
-        const targetDiv = document.getElementById(targetId);
-        if (cb.checked) {
-          targetDiv.classList.add('visibile');
-        } else {
-          targetDiv.classList.remove('visibile');
-        }
-      });
-    }
-
-    // Gestione della visibilità dell'intera pagina
-    const paginaVisibileCheckbox = document.getElementById('paginaVisibile');
-    const contenutoPagina = document.getElementById('contenutoPagina');
-    paginaVisibileCheckbox.addEventListener('change', () => {
-      contenutoPagina.style.display = paginaVisibileCheckbox.checked ? 'block' : 'none';
-    });
-
-    // Event listener per le checkbox dei moduli
-    const checkboxes = document.querySelectorAll('.toggleModulo');
-    checkboxes.forEach(cb => {
-      cb.addEventListener('change', aggiornaVisibilita);
-    });
-
-    // Inizializza la visibilità al caricamento della pagina
-    aggiornaVisibilita();
-  </script>
 </body>
 </html>
