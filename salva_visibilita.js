@@ -16,6 +16,7 @@ document.getElementById('visibilityForm').addEventListener('submit', function(e)
 
     fetch('https://script.google.com/macros/s/AKfycbyT5LPQryhmB_ZknfXPM3NUxlm3yb9m1g08nNmDUGSGRzx-D17UEiWwYG-urPNgYfkqMg/exec', {
         method: 'POST',
+        mode: 'no-cors',
         body: JSON.stringify({ tipo: 'visibilita', dati: visibilitySettings })
     }).then(() => {
         document.getElementById('salvataggioStatus').innerText = "Impostazioni salvate con successo!";
