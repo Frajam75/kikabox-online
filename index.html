@@ -3,33 +3,83 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kikabox Jukebox Virtuale</title>
+  <title>Kikabox Virtuale</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
-    <img src="Kikaboxlogo.svg" alt="Logo" class="logo">
-    <h1>Richieste di Ascolto</h1>
+    <img src="Kikaboxlogo.svg" alt="Kikabox Logo" class="logo" />
+    <h1 class="fade-in">🎶 Kikabox Virtuale</h1>
   </header>
 
-  <main>
-    <section id="richieste-ascolto">
-      <h2>Invia la tua richiesta di ascolto</h2>
+  <!-- Annunci -->
+  <section>
+    <h2><img src="lightbulb.svg" class="icon" /> Annunci del Locale</h2>
+    <div id="listaAnnunci">Caricamento...</div>
+  </section>
+
+  <!-- Richiesta Ascolto -->
+  <section id="richiesta-ascolto">
+      <h2>Richiesta di Ascolto</h2>
       <form id="form-ascolto">
-        <input list="datalist-artisti" id="artista-ascolto" name="artista" placeholder="Artista" required>
-        <datalist id="datalist-artisti"></datalist>
+        <label for="nome-ascolto">Il tuo nome:</label>
+        <input type="text" id="nome-ascolto" name="nome" required />
 
-        <input list="datalist-titoli" id="titolo-ascolto" name="titolo" placeholder="Titolo del brano" required>
-        <datalist id="datalist-titoli"></datalist>
+        <label for="artista-ascolto">Artista:</label>
+        <input list="artisti-lista" id="artista-ascolto" name="artista" autocomplete="off" required />
+        <datalist id="artisti-lista"></datalist>
 
-        <input type="text" name="dedica" placeholder="Dedica (facoltativa)">
-        <button type="submit">Invia richiesta</button>
+        <label for="titolo-ascolto">Titolo del brano:</label>
+        <input list="titoli-lista" id="titolo-ascolto" name="titolo" autocomplete="off" required />
+        <datalist id="titoli-lista"></datalist>
+
+        <label for="dedica-ascolto">Dedica (facoltativa):</label>
+        <input type="text" id="dedica-ascolto" name="dedica" />
+
+        <button type="submit">Invia Richiesta</button>
       </form>
-      <div id="lista-richieste-ascolto"></div>
     </section>
-  </main>
 
-  <script src="script.js"></script>
+  <!-- Richiesta Karaoke -->
+  <section>
+    <h2>🎤 Richiesta Karaoke</h2>
+    <input type="text" id="titoloKaraoke" placeholder="Titolo" />
+    <input type="text" id="artistaKaraoke" placeholder="Artista" />
+    <input type="text" id="tonalitaKaraoke" placeholder="Tonalità (facoltativa)" />
+    <input type="text" id="nomeKaraoke" placeholder="Il tuo nome" />
+    <button onclick="inviaRichiestaKaraoke()">Invia Richiesta</button>
+
+    <h3>⭐ Vota una Performance</h3>
+    <select id="selectPerformance"></select>
+    <label>Scelta Brano: <input type="number" min="1" max="5" id="votoBrano" /></label>
+    <label>Interpretazione: <input type="number" min="1" max="5" id="votoInterpretazione" /></label>
+    <label>Coinvolgimento: <input type="number" min="1" max="5" id="votoCoinvolgimento" /></label>
+    <button onclick="inviaVoto()">Invia Voto</button>
+    <div id="classifica">Classifica in aggiornamento...</div>
+  </section>
+
+  <!-- Suggerimenti -->
+  <section>
+    <h2>💡 Suggerisci un Brano</h2>
+    <input type="text" id="suggerimentoTitolo" placeholder="Titolo" />
+    <input type="text" id="suggerimentoArtista" placeholder="Artista" />
+    <button onclick="inviaSuggerimento()">Invia Suggerimento</button>
+  </section>
+
+  <!-- Chat -->
+  <section>
+    <h2>💬 Chat</h2>
+    <input type="text" id="nomeUtente" placeholder="Il tuo nome" />
+    <input type="text" id="stanza" placeholder="Nome stanza (pubblica o privata)" />
+    <button onclick="entraInStanza()">Entra</button>
+    <div id="chatBox" style="max-height: 200px; overflow-y: auto;"></div>
+    <input type="text" id="messaggio" placeholder="Scrivi un messaggio..." />
+    <button onclick="inviaMessaggio()">Invia</button>
+  </section>
+
+  <footer>
+    <a href="manager.html" target="_blank">🎛️ Vai al pannello Manager</a>
+  </footer>
 </body>
 </html>
