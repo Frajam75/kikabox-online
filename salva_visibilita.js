@@ -1,9 +1,8 @@
-
-// salva_visibilita.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
 
+// 🔐 Configurazione Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
   authDomain: "kikabox-7a71b.firebaseapp.com",
@@ -14,24 +13,45 @@ const firebaseConfig = {
   measurementId: "G-V27WV50TBE"
 };
 
+// 🔄 Inizializza Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("Devi effettuare il login per accedere al manager.");
-    window.location.href = "login.html";
+// 👤 Autenticazione automatica (modificabile con login form se serve)
+signInWithEmailAndPassword(auth, "admin@kikabox.it", "password123")
+  .then(() => console.log("Accesso effettuato"))
+  .catch((error) => console.error("Errore di accesso:", error));
+
+// 📦 Salva configurazione
+document.getElementById("salvaBtn").addEventListener("click", async () => {
+  const moduli = ["ascolto", "karaoke", "voti", "suggerimenti", "chat", "annunci"];
+  const visibilita = {};
+
+  moduli.forEach(modulo => {
+    visibilita[modulo] = document.getElementById(modulo).checked;
+  });
+
+  try {
+    await setDoc(doc(db, "configurazione", "moduli"), visibilita);
+    alert("Configurazione salvata con successo.");
+  } catch (e) {
+    console.error("Errore nel salvataggio:", e);
+    alert("Errore durante il salvataggio.");
   }
 });
 
-export async function salvaVisibilita(moduli) {
-  try {
-    await setDoc(doc(db, "configurazione", "moduli"), moduli);
-    alert("Impostazioni salvate correttamente su Firestore.");
-  } catch (e) {
-    console.error("Errore nel salvataggio:", e);
-    alert("Errore nel salvataggio delle impostazioni.");
+// ✅ Carica configurazione esistente
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const docRef = doc(db, "configurazione", "moduli");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const dati = docSnap.data();
+      Object.keys(dati).forEach(modulo => {
+        const checkbox = document.getElementById(modulo);
+        if (checkbox) checkbox.checked = dati[modulo];
+      });
+    }
   }
-}
-
+});
