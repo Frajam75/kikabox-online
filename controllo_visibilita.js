@@ -1,14 +1,42 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const STATO_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7XBUd9XhYP--6iywxL9j6ikr_9uazrJm5NWuH2AkZTzoiNlUY-77ie5hI8vwnlkjZPKx8lQM7Nhkm/pub?gid=1906824384&single=true&output=csv";
+// Inizializzazione Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
-  fetch(STATO_URL)
-    .then(response => response.text())
-    .then(data => {
-      const stato = data.split("\n")[1]?.trim().toLowerCase();
-      if (stato !== "attivo") {
-        document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-size:24px;text-align:center;padding:1em;'>⛔ Il jukebox è attualmente non disponibile. Torna durante la serata!</div>";
-        throw new Error("Sito non attivo");
+const firebaseConfig = {
+  apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
+  authDomain: "kikabox-7a71b.firebaseapp.com",
+  projectId: "kikabox-7a71b",
+  storageBucket: "kikabox-7a71b.appspot.com",
+  messagingSenderId: "921138873322",
+  appId: "1:921138873322:web:148bad4db454d57bbaa893",
+  measurementId: "G-V27WV50TBE"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Funzione per applicare la visibilità ai moduli
+async function applicaVisibilita() {
+  try {
+    const docRef = doc(db, "visibilita", "moduli");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+
+      for (const [modulo, visibile] of Object.entries(data)) {
+        const elemento = document.getElementById(modulo);
+        if (elemento) {
+          elemento.style.display = visibile ? "block" : "none";
+        }
       }
-    })
-    .catch(error => console.error("Controllo stato fallito:", error));
-});
+    } else {
+      console.error("Nessun documento trovato in Firestore.");
+    }
+  } catch (error) {
+    console.error("Errore nel recuperare la visibilità:", error);
+  }
+}
+
+// Avvio all'apertura della pagina
+document.addEventListener("DOMContentLoaded", applicaVisibilita);
