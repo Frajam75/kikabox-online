@@ -1,3 +1,23 @@
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
+    authDomain: "kikabox-7a71b.firebaseapp.com",
+    projectId: "kikabox-7a71b",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // NON loggato → vai a login.html
+      window.location.href = "login.html";
+    }
+  });
+</script>
 
 <!DOCTYPE html>
 <html lang="it">
