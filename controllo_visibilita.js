@@ -1,7 +1,8 @@
-// Inizializzazione Firebase
+// controllo_visibilita.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
+// Configurazione Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
   authDomain: "kikabox-7a71b.firebaseapp.com",
@@ -15,28 +16,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Funzione per applicare la visibilità ai moduli
-async function applicaVisibilita() {
+// Recupera i moduli attivi da Firestore
+async function applicaVisibilitaModuli() {
   try {
-    const docRef = doc(db, "visibilita", "moduli");
+    const docRef = doc(db, "configurazione", "moduli");
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const data = docSnap.data();
+      const moduli = docSnap.data();
 
-      for (const [modulo, visibile] of Object.entries(data)) {
+      for (const [modulo, attivo] of Object.entries(moduli)) {
         const elemento = document.getElementById(modulo);
         if (elemento) {
-          elemento.style.display = visibile ? "block" : "none";
+          elemento.style.display = attivo ? "block" : "none";
         }
       }
     } else {
-      console.error("Nessun documento trovato in Firestore.");
+      console.warn("Nessuna configurazione trovata in Firestore.");
     }
   } catch (error) {
-    console.error("Errore nel recuperare la visibilità:", error);
+    console.error("Errore nel recupero dei moduli da Firestore:", error);
   }
 }
 
-// Avvio all'apertura della pagina
-document.addEventListener("DOMContentLoaded", applicaVisibilita);
+applicaVisibilitaModuli();
