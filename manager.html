@@ -13,34 +13,7 @@
 
   onAuthStateChanged(auth, (user) => {
     if (!user) {
-      // NON loggato → vai a login.html
       window.location.href = "login.html";
     }
   });
 </script>
-
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestione Moduli - Kikabox</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="salva_visibilita.js" defer></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Gestione Visibilità Moduli</h1>
-        <form id="visibilityForm">
-            <label><input type="checkbox" name="ascolto" checked> Modulo Ascolto</label><br>
-            <label><input type="checkbox" name="karaoke" checked> Modulo Karaoke</label><br>
-            <label><input type="checkbox" name="chat" checked> Modulo Chat</label><br>
-            <label><input type="checkbox" name="voti" checked> Modulo Voti</label><br>
-            <label><input type="checkbox" name="suggerimenti" checked> Modulo Suggerimenti</label><br>
-            <label><input type="checkbox" name="annunci" checked> Modulo Annunci</label><br>
-            <label><input type="checkbox" name="pagina_visibile" checked> Pagina Visibile</label><br><br>
-            <button type="submit">Salva modifiche</button>
-        </form>
-        <p id="salvataggioStatus"></p>
-    </div>
-</body>
-</html>
