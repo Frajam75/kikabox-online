@@ -7,6 +7,30 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
+    authDomain: "kikabox-7a71b.firebaseapp.com",
+    projectId: "kikabox-7a71b",
+    storageBucket: "kikabox-7a71b.appspot.com",
+    messagingSenderId: "921138873322",
+    appId: "1:921138873322:web:148bad4db454d57bbaa893",
+    measurementId: "G-V27WV50TBE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // Utente non loggato: reindirizza alla pagina di login
+      window.location.href = "login.html";
+    }
+  });
+</script>
   <h1>Gestione Visibilità Moduli</h1>
   <form id="moduliForm">
     <label><input type="checkbox" id="moduloAscolto"> Modulo Ascolto</label><br>
