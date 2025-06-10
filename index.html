@@ -82,5 +82,62 @@
     <a href="login.html" target="_blank">🎛️ Vai al pannello Manager</a>
   </footer>
   <script type="module" src="controllo_visibilita.js"></script>
+  <script type="module">
+  // Import SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  // Configurazione del progetto
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
+    authDomain: "kikabox-7a71b.firebaseapp.com",
+    projectId: "kikabox-7a71b",
+    storageBucket: "kikabox-7a71b.appspot.com",
+    messagingSenderId: "921138873322",
+    appId: "1:921138873322:web:148bad4db454d57bbaa893",
+    measurementId: "G-V27WV50TBE"
+  };
+
+  // Inizializza Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Salva richiesta di ascolto
+  document.getElementById("inviaAscolto").addEventListener("click", async () => {
+    const nome = document.getElementById("nomeAscolto").value;
+    const artista = document.getElementById("artistaAscolto").value;
+    const titolo = document.getElementById("titoloAscolto").value;
+    const dedica = document.getElementById("dedicaAscolto").value;
+
+    await addDoc(collection(db, "richieste_ascolto"), {
+      nome,
+      artista,
+      titolo,
+      dedica,
+      timestamp: serverTimestamp()
+    });
+
+    alert("Richiesta di ascolto inviata!");
+  });
+
+  // Salva richiesta karaoke
+  document.getElementById("inviaKaraoke").addEventListener("click", async () => {
+    const nome = document.getElementById("nomeKaraoke").value;
+    const artista = document.getElementById("artistaKaraoke").value;
+    const titolo = document.getElementById("titoloKaraoke").value;
+    const tonalita = document.getElementById("tonalitaKaraoke").value;
+
+    await addDoc(collection(db, "richieste_karaoke"), {
+      nome,
+      artista,
+      titolo,
+      tonalità: tonalita,
+      timestamp: serverTimestamp()
+    });
+
+    alert("Richiesta karaoke inviata!");
+  });
+</script>
+
 </body>
 </html>
