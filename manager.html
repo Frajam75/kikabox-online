@@ -2,98 +2,85 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestione Moduli</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
-    authDomain: "kikabox-7a71b.firebaseapp.com",
-    projectId: "kikabox-7a71b",
-    storageBucket: "kikabox-7a71b.appspot.com",
-    messagingSenderId: "921138873322",
-    appId: "1:921138873322:web:148bad4db454d57bbaa893",
-    measurementId: "G-V27WV50TBE"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
-  });
-</script>
-
-  <h1>Gestione Visibilità Moduli</h1>
-  <form id="moduliForm">
-    <label><input type="checkbox" id="moduloAscolto"> Modulo Ascolto</label><br>
-    <label><input type="checkbox" id="moduloKaraoke"> Modulo Karaoke</label><br>
-    <label><input type="checkbox" id="moduloVoti"> Modulo Voti</label><br>
-    <label><input type="checkbox" id="moduloChat"> Modulo Chat</label><br>
-    <label><input type="checkbox" id="moduloAnnunci"> Modulo Annunci</label><br>
-    <label><input type="checkbox" id="moduloSuggerimenti"> Modulo Suggerimenti</label><br>
-    <label><input type="checkbox" id="mostraPagina"> Mostra Pagina</label><br><br>
-    <button type="submit">Salva Modifiche</button>
-  </form>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manager Kikabox</title>
+  <link rel="stylesheet" href="style.css">
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+    // Firebase import
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
       authDomain: "kikabox-7a71b.firebaseapp.com",
-      projectId: "kikabox-7a71b"
+      projectId: "kikabox-7a71b",
+      storageBucket: "kikabox-7a71b.appspot.com",
+      messagingSenderId: "921138873322",
+      appId: "1:921138873322:web:148bad4db454d57bbaa893",
+      measurementId: "G-V27WV50TBE"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const form = document.getElementById("moduliForm");
+    const moduli = ["modulo_ascolto", "modulo_karaoke", "modulo_voti", "modulo_chat", "modulo_annunci", "modulo_suggerimenti"];
+    const moduliCheckbox = {};
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        const docRef = doc(db, "visibilita_moduli", "stato_attuale");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("moduloAscolto").checked = data.moduloAscolto || false;
-          document.getElementById("moduloKaraoke").checked = data.moduloKaraoke || false;
-          document.getElementById("moduloVoti").checked = data.moduloVoti || false;
-          document.getElementById("moduloChat").checked = data.moduloChat || false;
-          document.getElementById("moduloAnnunci").checked = data.moduloAnnunci || false;
-          document.getElementById("moduloSuggerimenti").checked = data.moduloSuggerimenti || false;
-          document.getElementById("mostraPagina").checked = data.mostraPagina || false;
+    window.onload = () => {
+      const container = document.getElementById("moduli-container");
+
+      // Crea checkbox
+      moduli.forEach(id => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = id;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + id.replace("modulo_", "").toUpperCase()));
+        container.appendChild(label);
+        container.appendChild(document.createElement("br"));
+        moduliCheckbox[id] = checkbox;
+      });
+
+      document.getElementById("salva").addEventListener("click", async () => {
+        const visibilita = {};
+        moduli.forEach(id => visibilita[id] = moduliCheckbox[id].checked);
+        visibilita["pagina_intera"] = document.getElementById("pagina_intera").checked;
+        await setDoc(doc(db, "visibilita", "impostazioni"), visibilita);
+        alert("Impostazioni salvate!");
+      });
+
+      // Login check
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = "login.html";
+        } else {
+          const docSnap = await getDoc(doc(db, "visibilita", "impostazioni"));
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            moduli.forEach(id => {
+              if (moduliCheckbox[id]) moduliCheckbox[id].checked = data[id] ?? true;
+            });
+            document.getElementById("pagina_intera").checked = data["pagina_intera"] ?? true;
+          }
         }
-      }
-    });
+      });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const stato = {
-        moduloAscolto: document.getElementById("moduloAscolto").checked,
-        moduloKaraoke: document.getElementById("moduloKaraoke").checked,
-        moduloVoti: document.getElementById("moduloVoti").checked,
-        moduloChat: document.getElementById("moduloChat").checked,
-        moduloAnnunci: document.getElementById("moduloAnnunci").checked,
-        moduloSuggerimenti: document.getElementById("moduloSuggerimenti").checked,
-        mostraPagina: document.getElementById("mostraPagina").checked
-      };
-      const docRef = doc(db, "visibilita_moduli", "stato_attuale");
-      await setDoc(docRef, stato);
-      alert("Modifiche salvate!");
-    });
+      document.getElementById("logout").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "login.html";
+        });
+      });
+    };
   </script>
+</head>
+<body>
+  <h1>Manager Visibilità Moduli</h1>
+  <div id="moduli-container"></div>
+  <label><input type="checkbox" id="pagina_intera"> Mostra Pagina Intera</label><br><br>
+  <button id="salva">Salva</button>
+  <button id="logout">Logout</button>
 </body>
 </html>
