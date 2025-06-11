@@ -43,6 +43,19 @@
         container.appendChild(document.createElement("br"));
         moduliCheckbox[id] = checkbox;
       });
+<!-- AGGIUNTA DOPO I BOTTONI -->
+<h2>Dashboard Richieste</h2>
+<div id="dashboard">
+  <h3>Richieste Ascolto</h3>
+  <table border="1" id="tabella-ascolto">
+    <tr><th>Artista</th><th>Titolo</th><th>Dedica</th><th>Nome</th></tr>
+  </table>
+
+  <h3>Richieste Karaoke</h3>
+  <table border="1" id="tabella-karaoke">
+    <tr><th>Artista</th><th>Titolo</th><th>Nome</th></tr>
+  </table>
+</div>
 
       document.getElementById("salva").addEventListener("click", async () => {
         const visibilita = {};
