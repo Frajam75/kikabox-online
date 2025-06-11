@@ -43,55 +43,7 @@
         container.appendChild(document.createElement("br"));
         moduliCheckbox[id] = checkbox;
       });
-<!-- AGGIUNTA DOPO I BOTTONI -->
-<h2>Dashboard Richieste</h2>
-<div id="dashboard">
-  <h3>Richieste Ascolto</h3>
-  <table border="1" id="tabella-ascolto">
-    <tr><th>Artista</th><th>Titolo</th><th>Dedica</th><th>Nome</th></tr>
-  </table>
 
-  <h3>Richieste Karaoke</h3>
-  <table border="1" id="tabella-karaoke">
-    <tr><th>Artista</th><th>Titolo</th><th>Nome</th></tr>
-  </table>
-</div>
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-async function caricaRichieste() {
-  // Richieste Ascolto
-  const ascoltoRef = collection(db, "richieste_ascolto");
-  const ascoltoSnap = await getDocs(ascoltoRef);
-  const tabellaAscolto = document.getElementById("tabella-ascolto");
-
-  ascoltoSnap.forEach(doc => {
-    const dati = doc.data();
-    const riga = document.createElement("tr");
-    riga.innerHTML = `
-      <td>${dati.artista || ""}</td>
-      <td>${dati.titolo || ""}</td>
-      <td>${dati.dedica || ""}</td>
-      <td>${dati.nome || ""}</td>
-    `;
-    tabellaAscolto.appendChild(riga);
-  });
-
-  // Richieste Karaoke
-  const karaokeRef = collection(db, "richieste_karaoke");
-  const karaokeSnap = await getDocs(karaokeRef);
-  const tabellaKaraoke = document.getElementById("tabella-karaoke");
-
-  karaokeSnap.forEach(doc => {
-    const dati = doc.data();
-    const riga = document.createElement("tr");
-    riga.innerHTML = `
-      <td>${dati.artista || ""}</td>
-      <td>${dati.titolo || ""}</td>
-      <td>${dati.nome || ""}</td>
-    `;
-    tabellaKaraoke.appendChild(riga);
-  });
-}
       document.getElementById("salva").addEventListener("click", async () => {
         const visibilita = {};
         moduli.forEach(id => visibilita[id] = moduliCheckbox[id].checked);
@@ -112,8 +64,7 @@ async function caricaRichieste() {
               if (moduliCheckbox[id]) moduliCheckbox[id].checked = data[id] ?? true;
             });
             document.getElementById("pagina_intera").checked = data["pagina_intera"] ?? true;
-            await caricaRichieste();
-          }
+                      }
         }
       });
 
