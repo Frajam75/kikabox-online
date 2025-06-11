@@ -2,14 +2,44 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manager Kikabox</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js"></script>
+</head>
+<body>
+  <div class="manager-container">
+    <h1>Area Riservata - Kikabox</h1>
+    <div id="loginSection">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="loginBtn">Accedi</button>
+    </div>
+
+    <div id="managerSection" style="display:none;">
+      <h2>Controllo Moduli</h2>
+      <div id="moduliCheckbox"></div>
+      <button id="salvaModuli">Salva Preferenze</button>
+
+      <h2>Richieste Ascolto</h2>
+      <div id="ascoltoContainer"></div>
+
+      <h2>Richieste Karaoke</h2>
+      <div id="karaokeContainer"></div>
+
+      <h2>Suggerimenti</h2>
+      <div id="suggerimentiContainer"></div>
+
+      <h2>Chat Moderazione</h2>
+      <div id="chatContainer"></div>
+    </div>
+  </div>
+
   <script type="module">
-    // Firebase import
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAd86VRjAKDRO35FmkIBpezjWNjjyt1k-Y",
@@ -25,62 +55,93 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const moduli = ["modulo_ascolto", "modulo_karaoke", "modulo_voti", "modulo_chat", "modulo_annunci", "modulo_suggerimenti"];
-    const moduliCheckbox = {};
+    const loginBtn = document.getElementById("loginBtn");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginSection = document.getElementById("loginSection");
+    const managerSection = document.getElementById("managerSection");
 
-    window.onload = () => {
-      const container = document.getElementById("moduli-container");
+    loginBtn.addEventListener("click", () => {
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => location.reload())
+        .catch((error) => alert("Accesso negato: " + error.message));
+    });
 
-      // Crea checkbox
-      moduli.forEach(id => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginSection.style.display = "none";
+        managerSection.style.display = "block";
+        caricaManager();
+      }
+    });
+
+    async function caricaManager() {
+      await caricaModuli();
+      await caricaDati("ascolto", "ascoltoContainer");
+      await caricaDati("karaoke", "karaokeContainer");
+      await caricaDati("suggerimenti", "suggerimentiContainer");
+      await caricaChat();
+    }
+
+    async function caricaModuli() {
+      const moduli = ["moduloAscolto", "moduloKaraoke", "moduloSuggerimenti", "moduloChat"];
+      const impRef = doc(db, "impostazioni", "moduli_visibili");
+      const snap = await getDoc(impRef);
+      const data = snap.exists() ? snap.data() : {};
+
+      const container = document.getElementById("moduliCheckbox");
+      container.innerHTML = "";
+      moduli.forEach(mod => {
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.id = mod;
+        check.checked = data[mod] ?? true;
         const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = id;
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(" " + id.replace("modulo_", "").toUpperCase()));
+        label.htmlFor = mod;
+        label.textContent = mod;
+        container.appendChild(check);
         container.appendChild(label);
         container.appendChild(document.createElement("br"));
-        moduliCheckbox[id] = checkbox;
       });
 
-      document.getElementById("salva").addEventListener("click", async () => {
-        const visibilita = {};
-        moduli.forEach(id => visibilita[id] = moduliCheckbox[id].checked);
-        visibilita["pagina_intera"] = document.getElementById("pagina_intera").checked;
-        await setDoc(doc(db, "visibilita", "impostazioni"), visibilita);
-        alert("Impostazioni salvate!");
-      });
-
-      // Login check
-      onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-          window.location.href = "login.html";
-        } else {
-          const docSnap = await getDoc(doc(db, "visibilita", "impostazioni"));
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            moduli.forEach(id => {
-              if (moduliCheckbox[id]) moduliCheckbox[id].checked = data[id] ?? true;
-            });
-            document.getElementById("pagina_intera").checked = data["pagina_intera"] ?? true;
-                      }
-        }
-      });
-
-      document.getElementById("logout").addEventListener("click", () => {
-        signOut(auth).then(() => {
-          window.location.href = "login.html";
+      document.getElementById("salvaModuli").addEventListener("click", async () => {
+        const nuovoStato = {};
+        moduli.forEach(mod => {
+          nuovoStato[mod] = document.getElementById(mod).checked;
         });
+        await setDoc(impRef, nuovoStato);
+        alert("Moduli aggiornati!");
       });
-    };
+    }
+
+    async function caricaDati(raccolta, contenitoreId) {
+      const container = document.getElementById(contenitoreId);
+      container.innerHTML = "";
+      const querySnap = await getDocs(collection(db, raccolta));
+      querySnap.forEach(docSnap => {
+        const p = document.createElement("p");
+        p.textContent = JSON.stringify(docSnap.data());
+        container.appendChild(p);
+      });
+    }
+
+    async function caricaChat() {
+      const container = document.getElementById("chatContainer");
+      container.innerHTML = "";
+      const querySnap = await getDocs(collection(db, "chat"));
+      querySnap.forEach(async docSnap => {
+        const div = document.createElement("div");
+        div.textContent = docSnap.data().messaggio;
+        const btn = document.createElement("button");
+        btn.textContent = "Elimina";
+        btn.onclick = async () => {
+          await deleteDoc(doc(db, "chat", docSnap.id));
+          div.remove();
+        };
+        div.appendChild(btn);
+        container.appendChild(div);
+      });
+    }
   </script>
-</head>
-<body>
-  <h1>Manager Visibilità Moduli</h1>
-  <div id="moduli-container"></div>
-  <label><input type="checkbox" id="pagina_intera"> Mostra Pagina Intera</label><br><br>
-  <button id="salva">Salva</button>
-  <button id="logout">Logout</button>
 </body>
 </html>
